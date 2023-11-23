@@ -1,8 +1,4 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-
-function Login({ setIsLoggedIn }) {
-  const history = useHistory();
+function Login({ onLogin }) {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -17,16 +13,23 @@ function Login({ setIsLoggedIn }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-
-    setIsLoggedIn(true);
-
-    // after logging the user in, redirect to the home page!
-    history.push("/");
+    fetch("http://localhost:3001/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((r) => r.json())
+      .then((user) => {
+        onLogin(user);
+        // after logging the user in, redirect to the home page!
+        history.push("/home");
+      });
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1>Login</h1>
       <input
         type="text"
         name="username"
@@ -43,5 +46,3 @@ function Login({ setIsLoggedIn }) {
     </form>
   );
 }
-
-export default Login;
